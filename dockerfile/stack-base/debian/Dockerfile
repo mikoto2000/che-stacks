@@ -8,19 +8,20 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-FROM debian:jessie
-ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+FROM debian:buster
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV PATH $JAVA_HOME/bin:$PATH
-RUN echo "deb http://http.debian.net/debian jessie-backports main" >> /etc/apt/sources.list && \
+RUN echo "deb http://http.debian.net/debian buster-backports main" >> /etc/apt/sources.list && \
     apt-get update && \
     apt-get -y install \
     openssh-server \
     sudo \
     rsync \
     procps \
-    -t jessie-backports \
-    openjdk-8-jdk-headless=8u171-b11-1~bpo8+1 \
-    openjdk-8-source=8u171-b11-1~bpo8+1 \
+    -t buster-backports \
+    openjdk-11-jdk-headless=11.0.4+11-1~deb10u1 \
+    openjdk-11-source=11.0.4+11-1~deb10u1 \
+    gnupg2 \
     wget \
     unzip \
     mc \
@@ -48,7 +49,6 @@ RUN sudo localedef -i en_US -f UTF-8 en_US.UTF-8 && \
     svn --version && \
     sed -i 's/# store-passwords = no/store-passwords = yes/g' /home/user/.subversion/servers && \
     sed -i 's/# store-plaintext-passwords = no/store-plaintext-passwords = yes/g' /home/user/.subversion/servers
-COPY open-jdk-source-file-location /open-jdk-source-file-location
 EXPOSE 22 4403
 WORKDIR /projects
 
@@ -76,4 +76,3 @@ COPY ["entrypoint.sh","/home/user/entrypoint.sh"]
 
 ENTRYPOINT ["/home/user/entrypoint.sh"]
 CMD tail -f /dev/null
-
