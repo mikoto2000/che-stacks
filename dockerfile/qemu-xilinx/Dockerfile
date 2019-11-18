@@ -41,6 +41,15 @@ LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
 LABEL version="v2019.1"
 LABEL description "qemu-system-aarh64: xilinx-v2019.1"
 
+USER root
+
+# aarch64 用のバイナリビルドができる環境を構築
+RUN apt-get update && apt-get -y install \
+    gdb-multiarch=8.2.1-2+b1 \
+    make \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 # build-env から必要なファイルをコピー
 # `/usr/local/bin/qemu-system-aarch64` と、
 # `ldd /usr/local/bin/qemu-system-aarch64` で表示される
@@ -63,4 +72,5 @@ COPY --from=build-env \
     /var/dts \
     /var/dts
 
+USER user
 
