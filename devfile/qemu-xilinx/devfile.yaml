@@ -5,7 +5,7 @@ metadata:
 components:
 - type: dockerimage
   alias: gcc-aarch64-linux-gnu
-  image: mikoto2000/gcc-aarch64-linux-gnu:4.8.3.0-1
+  image: mikoto2000/che-gcc-aarch64-linux-gnu:4.8.3.0-1
   memoryLimit: 512Mi
   mountSources: true
 - type: dockerimage
