@@ -34,11 +34,6 @@ RUN git clone -b xilinx-v2019.1 --depth 1 --recursive https://github.com/Xilinx/
     && cd qemu-devicetrees \
     && make OUTDIR=/var/dts
 
-RUN git clone -b xilinx-v2019.1 --depth 1 --recursive https://github.com/Xilinx/linux-xlnx.git \
-    && cd linux-xlnx \
-    && sed -i -e "s/#include/\/include\//" arch/arm/boot/dts/zynq-zybo.dts \
-    && dtc -I dts -O dtb -o /var/dts/zynq-zybo.dtb arch/arm/boot/dts/zynq-zybo.dts
-
 # コンテナとして使う環境を作る
 FROM mikoto2000/che-stack-base:debian
 
@@ -48,9 +43,8 @@ LABEL description "qemu-system-aarh64: xilinx-v2019.1"
 
 USER root
 
-# aarch64 用のバイナリビルドができる環境を構築
+# make で qemu 起動コマンドを実行することもあるので...
 RUN apt-get update && apt-get -y install \
-    gdb-multiarch=8.2.1-2+b1 \
     make \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
