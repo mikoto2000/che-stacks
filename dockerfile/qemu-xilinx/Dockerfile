@@ -34,6 +34,11 @@ RUN git clone -b xilinx-v2019.1 --depth 1 --recursive https://github.com/Xilinx/
     && cd qemu-devicetrees \
     && make OUTDIR=/var/dts
 
+RUN git clone -b xilinx-v2019.1 --depth 1 --recursive https://github.com/Xilinx/linux-xlnx.git \
+    && cd linux-xlnx \
+    && sed -i -e "s/#include/\/include\//" arch/arm/boot/dts/zynq-zybo.dts \
+    && dtc -I dts -O dtb -o /var/dts/zynq-zybo.dtb arch/arm/boot/dts/zynq-zybo.dts
+
 # コンテナとして使う環境を作る
 FROM mikoto2000/che-stack-base:debian
 
