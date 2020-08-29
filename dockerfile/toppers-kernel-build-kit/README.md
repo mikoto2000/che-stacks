@@ -10,6 +10,11 @@ TOPPERS 第三世代カーネルをビルドするための環境を含んだス
 docker build -t mikoto2000/che-toppers-kernel-build-kit:base-latest .
 ```
 
+### athrill-gcc
+
+```sh
+docker build -t mikoto2000/che-toppers-kernel-build-kit:athrill-gcc-latest -f Dockerfile_athrill-gcc .
+```
 ### gcc-aarch64-linux-gnu
 
 ```sh
