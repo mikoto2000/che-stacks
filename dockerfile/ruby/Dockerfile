@@ -1,5 +1,5 @@
 # コンテナとして使う環境を作る
-FROM ruby:2.7.1-alpine3.12
+FROM ruby:3-alpine
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
 LABEL version="1.0.0"
