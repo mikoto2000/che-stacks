@@ -13,6 +13,6 @@ docker build -t mikoto2000/che-qemu-xilinx:latest .
 ### without GDB
 
 ```sh
-docker build -t mikoto2000/che-qemu-xilinx:latest_without_gdb .
+docker build -t mikoto2000/che-qemu-xilinx:latest_without_gdb -f Dockerfile_without_gdb .
 ```
 

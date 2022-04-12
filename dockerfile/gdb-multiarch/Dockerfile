@@ -1,17 +1,21 @@
 # コンテナとして使う環境を作る
-FROM mikoto2000/che-stack-base:debian
+FROM mikoto2000/gdb-multiarch:latest
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
-LABEL version="8.2.1-2+b3"
-LABEL description "gdb-multiarch: 8.2.1-2+b3"
+LABEL version="1.0.0"
+LABEL description "gdb-multiarch"
 
-USER root
+RUN mkdir /projects && \
+    # Change permissions to let any arbitrary user
+    for f in "${HOME}" "/etc/passwd" "/projects"; do \
+      echo "Changing permissions on ${f}" && chgrp -R 0 ${f} && \
+      chmod -R g+rwX ${f}; \
+    done;
 
-# aarch64 用のバイナリビルドができる環境を構築
-RUN apt-get update && apt-get -y install --no-install-recommends \
-    gdb-multiarch=8.2.1-2+b3 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+COPY --chown=0:0 entrypoint.sh /
 
-USER user
+ENV HOME /projects
+WORKDIR /projects
 
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD ["sleep", "infinity"]

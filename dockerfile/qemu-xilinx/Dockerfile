@@ -1,81 +1,21 @@
-# qemu バイナリビルド用環境
-FROM debian:buster-slim as build-env
+FROM mikoto2000/qemu-xilinx:latest
 
 LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
-LABEL version="v2019.1"
-LABEL description "qemu-system-aarh64: xilinx-v2019.1"
+LABEL version="1.0.0"
+LABEL description "qemu-xilinx: 2021.1"
 
-RUN apt-get update && apt-get -y upgrade \
-    && apt-get -y install \
-        git \
-        build-essential \
-        python \
-        libglib2.0-dev \
-        libgcrypt20-dev \
-        zlib1g-dev \
-        autoconf \
-        automake \
-        libtool \
-        bison \
-        flex \
-        libpixman-1-dev \
-        device-tree-compiler \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN mkdir /projects && \
+    # Change permissions to let any arbitrary user
+    for f in "${HOME}" "/etc/passwd" "/projects"; do \
+      echo "Changing permissions on ${f}" && chgrp -R 0 ${f} && \
+      chmod -R g+rwX ${f}; \
+    done;
 
-WORKDIR /work
-RUN git clone -b xilinx-v2019.1 --depth 1 --recursive https://github.com/Xilinx/qemu.git \
-    && cd qemu \
-    && ./configure --target-list="aarch64-softmmu,microblazeel-softmmu" --enable-fdt --disable-kvm --disable-xen \
-    && make \
-    && make install
+COPY --chown=0:0 entrypoint.sh /
 
-RUN git clone -b xilinx-v2019.1 --depth 1 --recursive https://github.com/Xilinx/qemu-devicetrees.git \
-    && cd qemu-devicetrees \
-    && make OUTDIR=/var/dts
+ENV HOME /projects
+WORKDIR /projects
 
-RUN git clone -b xilinx-v2019.1 --depth 1 --recursive https://github.com/Xilinx/linux-xlnx.git \
-    && cd linux-xlnx \
-    && sed -i -e "s/#include/\/include\//" arch/arm/boot/dts/zynq-zybo.dts \
-    && dtc -I dts -O dtb -o /var/dts/zynq-zybo.dtb arch/arm/boot/dts/zynq-zybo.dts
-
-# コンテナとして使う環境を作る
-FROM mikoto2000/che-stack-base:debian
-
-LABEL maintainer "mikoto2000 <mikoto2000@gmail.com>"
-LABEL version="v2019.1"
-LABEL description "qemu-system-aarh64: xilinx-v2019.1"
-
-USER root
-
-# aarch64 用のバイナリビルドができる環境を構築
-RUN apt-get update && apt-get -y install \
-    gdb-multiarch=8.2.1-2+b1 \
-    make \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# build-env から必要なファイルをコピー
-# `/usr/local/bin/qemu-system-aarch64` と、
-# `ldd /usr/local/bin/qemu-system-aarch64` で表示される
-# ライブラリ群をコピーする
-COPY --from=build-env \
-    /usr/local/bin/qemu-system-aarch64 \
-    /usr/local/bin/qemu-system-aarch64
-
-COPY --from=build-env \
-    /usr/lib/x86_64-linux-gnu/libpixman-1.so.0 \
-    /usr/lib/x86_64-linux-gnu/libgthread-2.0.so.0 \
-    /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0 \
-    /usr/lib/x86_64-linux-gnu/
-
-COPY --from=build-env \
-    /usr/local/share/qemu \
-    /usr/local/share/qemu
-
-COPY --from=build-env \
-    /var/dts \
-    /var/dts
-
-USER user
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD ["sleep", "infinity"]
 

@@ -9,7 +9,7 @@ export USER_ID
 export GROUP_ID
 
 if ! whoami >/dev/null 2>&1; then
-    echo "${USER_NAME:-node}:x:${USER_ID}:0:${USER_NAME:-node} node:${HOME}:/bin/bash" >> /etc/passwd
+    echo "${USER_NAME:-user}:x:${USER_ID}:0:${USER_NAME:-user} user:${HOME}:/bin/bash" >> /etc/passwd
 fi
 
 # Grant access to projects volume in case of non root user with sudo rights
@@ -18,4 +18,5 @@ if [ "${USER_ID}" -ne 0 ] && command -v sudo >/dev/null 2>&1 && sudo -n true > /
 fi
 
 exec "$@"
+
 
